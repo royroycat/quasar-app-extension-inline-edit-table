@@ -11,7 +11,7 @@
   },
   "bugs": "",
   "homepage": "",
-  "devDependencies": {
+  "dependencies": {
     "quasar-ui-inline-edit-table": "latest"
   },
   "engines": {
