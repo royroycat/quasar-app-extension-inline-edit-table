@@ -1,3 +1,5 @@
+Still under development, it is not usable.
+
 <img src="https://img.shields.io/npm/v/quasar-ui-inline-edit-table.svg?label=quasar-ui-inline-edit-table">
 <img src="https://img.shields.io/npm/v/quasar-app-extension-inline-edit-table.svg?label=quasar-app-extension-inline-edit-table">
 
