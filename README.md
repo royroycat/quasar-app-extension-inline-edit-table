@@ -10,6 +10,18 @@ Compatible with Quasar UI v2 and Vue 3.
 
 * [/app-extension](app-extension) - Quasar app extension
 
+# Install
+
+`quasar ext add inline-edit-table`
+
+Quasar CLI will retrieve it from NPM and install the extension.
+
+# Uninstall
+
+`quasar ext remove inline-edit-table`
+
+
+
 # Usage
 ```vue
 <template>
