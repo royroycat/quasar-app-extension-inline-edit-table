@@ -17,13 +17,15 @@
                     <!-- isEditing.status is true, display q-input, then: -->
                     <template
                         v-else-if="col.type === 'number' && isEditing.status == true && col.editable == true && isEditing.row == props.row">
-                        <q-input type="number" outlined v-model="isEditing.editedValue[col.name]"
-                            :value="col.value.toFixed(col.decimalPlaces)"></q-input>
+                        <q-input type="number" outlined v-model="isEditing.editedValues[col.name]"></q-input>
                     </template>
                     <template
                         v-else-if="col.type === 'string' && isEditing.status == true && col.editable == true && isEditing.row == props.row">
-                        <q-input type="string" outlined v-model="isEditing.editedValue[col.name]"
-                            :value="col.value"></q-input>
+                        <q-input type="string" outlined v-model="isEditing.editedValues[col.name]"></q-input>
+                    </template>
+                    <template
+                        v-else-if="col.type == 'percentage' && isEditing.status == true && col.editable == true && isEditing.row == props.row">
+                        <q-input type="number" outlined v-model="isEditing.editedValues[col.name]"></q-input>
                     </template>
 
                     <!-- isEditing.status is false, just display the value, then: -->
@@ -59,7 +61,7 @@ export default {
     data() {
         return {
             props: {},
-            isEditing: { status: false, row: null, editedValue: {} }
+            isEditing: { status: false, row: null, editedValues: {} }
         }
     },
     mounted() {
@@ -70,7 +72,7 @@ export default {
         resetEditingData() {
             this.isEditing.status = false
             this.isEditing.row = null
-            this.isEditing.editedValue = {}
+            this.isEditing.editedValues = {}
         },
         removeRow(thisRow) {
             console.log("removeRow event emitted")
@@ -79,38 +81,50 @@ export default {
             const index = this.rows.indexOf(thisRow);
             this.rows.splice(index, 1);
         },
-        editRow(row) {
+        editRow(thisRow) {
             console.log("editRow event emitted")
-            console.log("proxy row : ", row)
+            console.log("proxy row : ", thisRow)
             this.isEditing.status = true
-            this.isEditing.row = row
-            // copy row field value for v-model editedValue
-            this.isEditing.editedValue = { ...row }
-            this.$emit('editRow', row);
-        },
-        confirmRow(thisRow) {
-            console.log("confirmRow event emitted:")
-            this.isEditing.status = false
-            // Copy the editedValue to a object for manipulation 
-            let newValuesItem = { ...this.isEditing.editedValue }
+            this.isEditing.row = thisRow
 
-            // Since q-input will return a string whatever the type, 
-            // so ask columns to find out the property type, if number then parseFloat
-            newValuesItem = Object.keys(newValuesItem).reduce((acc, propName) => {
+            // save editedValues by thisRow field using reduce since if column is percentage need to multiply 100 in the input box
+            this.isEditing.editedValues = Object.keys(thisRow).reduce((acc, propName) => {
                 const column = this.columns.find((col) => col.name === propName);
-                if (column && column.type === 'number') {
-                    acc[propName] = parseFloat(newValuesItem[propName]);
+                if (column && column.type === 'percentage') {
+                    acc[propName] = parseFloat(thisRow[propName]) * 100;
                 } else {
-                    acc[propName] = newValuesItem[propName];
+                    acc[propName] = thisRow[propName];
                 }
                 return acc;
             }, {});
 
-            console.log("proxy row : ", thisRow, "new Values : ", newValuesItem)
-            this.$emit('confirmRow', thisRow, newValuesItem);
+            this.$emit('editRow', thisRow);
+        },
+        confirmRow(thisRow) {
+            console.log("confirmRow event emitted:")
+            this.isEditing.status = false
+            // Copy the editedValues to a object for manipulation 
+            let newValues = { ...this.isEditing.editedValues }
+
+            // Since q-input will return a string whatever the type, 
+            // so ask columns to find out the property type, if number then parseFloat
+            newValues = Object.keys(newValues).reduce((acc, propName) => {
+                const column = this.columns.find((col) => col.name === propName);
+                if (column && column.type === 'number') {
+                    acc[propName] = parseFloat(newValues[propName]);
+                } else if (column && column.type === 'percentage') {
+                    acc[propName] = parseFloat(newValues[propName]) / 100;
+                } else {
+                    acc[propName] = newValues[propName];
+                }
+                return acc;
+            }, {});
+
+            console.log("proxy row : ", thisRow, "new Values : ", newValues)
+            this.$emit('confirmRow', thisRow, newValues);
             // replace the row value of that row (by index) by new value
             const index = this.rows.indexOf(thisRow);
-            this.rows[index] = { ...newValuesItem }
+            this.rows[index] = { ...newValues }
             this.resetEditingData()
         }
     }
