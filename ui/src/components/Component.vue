@@ -41,6 +41,11 @@
                 </q-td>
             </q-tr>
         </template>
+        <!-- the following is for passing q-table slots from parent q-inline-edit-table tag -->
+        <template v-for="(_, name) in $slots" v-slot:[name]="slotProps">
+            <slot v-if="slotProps" :name="name" v-bind="slotProps" />
+            <slot v-else :name="name" />
+        </template>
     </q-table>
 </template>
   
