@@ -1,9 +1,8 @@
 <template>
-    <q-table bordered :columns="columns" :rows="rows" :props="props">
+    <q-table bordered :columns="columns" :rows="rows">
         <template v-slot:body="props">
-            <q-tr :props="props">
-                <q-td v-for="col in props.cols" :key="col.name" :props="props">
-
+            <q-tr>
+                <q-td v-for="col in props.cols" :key="col.name">
                     <template v-if="col.name === 'action'">
                         <slot name="action">
                             <q-btn round size="xs" color="primary" icon="remove" @click="removeRow(props.row)" />
@@ -17,7 +16,8 @@
                     <!-- isEditing.status is true, display q-input, then: -->
                     <template
                         v-else-if="col.type === 'number' && isEditing.status == true && col.editable == true && isEditing.row == props.row">
-                        <q-input type="number" outlined :model-value="isEditing.editedValues[col.name]" @update:model-value="(value) => isEditing.editedValues[col.name] = parseFloat(value)"></q-input>
+                        <q-input type="number" outlined :model-value="isEditing.editedValues[col.name]"
+                            @update:model-value="(value) => isEditing.editedValues[col.name] = parseFloat(value)"></q-input>
                     </template>
                     <template
                         v-else-if="col.type === 'string' && isEditing.status == true && col.editable == true && isEditing.row == props.row">
@@ -25,7 +25,8 @@
                     </template>
                     <template
                         v-else-if="col.type == 'percentage' && isEditing.status == true && col.editable == true && isEditing.row == props.row">
-                        <q-input type="number" outlined :model-value="isEditing.editedValues[col.name]*100" @update:model-value="(value) => isEditing.editedValues[col.name] = value/100"></q-input>
+                        <q-input type="number" outlined :model-value="isEditing.editedValues[col.name] * 100"
+                            @update:model-value="(value) => isEditing.editedValues[col.name] = value / 100"></q-input>
                     </template>
 
                     <!-- isEditing.status is false, just display the value, then: -->
@@ -41,11 +42,35 @@
                 </q-td>
             </q-tr>
         </template>
+
+        <!-- for createRow UI -->
+        <template v-slot:bottom-row="props">
+            <q-tr>
+                <q-td v-for="col in props.cols" :key="col.name">
+                    <template v-if="col.name === 'action'">
+                        <q-btn round dense size="xs" color="primary" icon="add" @click="createRow()" />
+                    </template>
+                    <template v-else-if="col.requireWhenCreate == true && col.type === 'string'">
+                        <q-input outlined dense type="text" v-model="creatingValues[col.name]" />
+                    </template>
+                    <template v-else-if="col.requireWhenCreate == true && col.type === 'number'">
+                        <q-input outlined dense type="number" :model-value="creatingValues[col.name]"
+                            @update:model-value="(value) => creatingValues[col.name] = parseFloat(value)" />
+                    </template>
+                    <template v-else-if="col.requireWhenCreate == true && col.type === 'percentage'">
+                        <q-input outlined dense type="number" :model-value="creatingValues[col.name]?creatingValues[col.name] * 100:''"
+                            @update:model-value="(value) => creatingValues[col.name] = value / 100"></q-input>
+                    </template>
+                </q-td>
+            </q-tr>
+        </template>
+
         <!-- the following is for passing q-table slots from parent q-inline-edit-table tag -->
         <template v-for="(_, name) in $slots" v-slot:[name]="slotProps">
             <slot v-if="slotProps" :name="name" v-bind="slotProps" />
             <slot v-else :name="name" />
         </template>
+
     </q-table>
 </template>
   
@@ -66,7 +91,8 @@ export default {
     data() {
         return {
             props: {},
-            isEditing: { status: false, row: null, editedValues: {} }
+            isEditing: { status: false, row: null, editedValues: {} },
+            creatingValues: {}
         }
     },
     mounted() {
@@ -74,15 +100,17 @@ export default {
         this.columns.unshift({ name: 'action', label: 'action', align: 'left' })
     },
     methods: {
-        resetEditingData() {
+        resetEditingAndCreatingData() {
             this.isEditing.status = false
             this.isEditing.row = null
             this.isEditing.editedValues = {}
+            this.creatingValues = {}
         },
         removeRow(thisRow) {
             console.log("removeRow event emitted")
             console.log("proxy row : ", thisRow)
             this.$emit('removeRow', thisRow);
+            // reflect the table ui
             const index = this.rows.indexOf(thisRow);
             this.rows.splice(index, 1);
         },
@@ -104,10 +132,20 @@ export default {
 
             console.log("proxy row : ", thisRow, "new Values : ", newValues)
             this.$emit('confirmRow', thisRow, newValues);
+
+            // reflect the table ui
             // replace the row value of that row (by index) by new value
             const index = this.rows.indexOf(thisRow);
             this.rows[index] = { ...newValues }
-            this.resetEditingData()
+            this.resetEditingAndCreatingData()
+        },
+        createRow() {
+            console.log("createRow event emitted:")
+            console.log("creating Value : ", this.creatingValues)
+            this.$emit('createRow', this.creatingValues)
+            // reflect the table ui
+            this.rows.push(this.creatingValues)
+            this.resetEditingAndCreatingData()
         }
     }
 }
