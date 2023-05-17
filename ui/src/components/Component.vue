@@ -54,11 +54,11 @@
                         <q-input outlined dense type="text" v-model="creatingValues[col.name]" />
                     </template>
                     <template v-else-if="col.requireWhenCreate == true && col.type === 'number'">
-                        <q-input outlined dense type="number" :model-value="creatingValues[col.name]"
+                        <q-input outlined dense type="number" :model-value="creatingValues[col.name]?creatingValues[col.name]:creatingValues[col.name]=0"
                             @update:model-value="(value) => creatingValues[col.name] = parseFloat(value)" />
                     </template>
                     <template v-else-if="col.requireWhenCreate == true && col.type === 'percentage'">
-                        <q-input outlined dense type="number" :model-value="creatingValues[col.name]?creatingValues[col.name] * 100:''"
+                        <q-input outlined dense type="number" :model-value="creatingValues[col.name]?creatingValues[col.name] * 100:creatingValues[col.name]=0"
                             @update:model-value="(value) => creatingValues[col.name] = value / 100"></q-input>
                     </template>
                 </q-td>
