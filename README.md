@@ -30,16 +30,7 @@ Quasar CLI will retrieve it from NPM and install the extension.
 
 
 # Usage
-```vue
-<template>
-    <div>
-        <q-inline-edit-table bordered :loading="loading" :rows="rows" :columns="columns" row-key="name" 
-            :rows-per-page-options="[0]" no-data-label="☝️ No data. Please add an entry. ☝️"
-            separator="vertical" @removeRow="removeRowListener" @editRow="editRowListener" @confirmRow="confirmRowListener">
-        </q-inline-edit-table>
-    </div>
-</template>
-  
+```vue  
 <template>
     <div>
         <q-inline-edit-table bordered :loading="loading" :rows="rows" :columns="columns" row-key="name" 
