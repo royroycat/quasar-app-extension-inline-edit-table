@@ -78,6 +78,7 @@
 import { ref } from 'vue';
 export default {
     name: "QInlineEditTable",
+    emits: ['removeRow','editRow','confirmRow','createRow'],
     props: {
         columns: {
             type: Array,
