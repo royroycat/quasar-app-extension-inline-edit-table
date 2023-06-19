@@ -11,7 +11,7 @@
                             <q-btn v-else-if="isEditing.status == true && isEditing.row == props.row" class="q-ml-sm" round
                                 size="xs" color="primary" icon="check" @click="confirmRow(props.row)" />
                         </slot>
-                        <slot name="more-action"></slot>
+                        <slot name="more-action" v-bind:row="props.row"></slot>
                     </template>
                     <!-- isEditing.status is true, display q-input, then: -->
                     <template
