@@ -2,7 +2,7 @@
     <q-table bordered :columns="columns" :rows="rows">
         <template v-slot:body="props">
             <q-tr>
-                <q-td v-for="col in props.cols" :key="col.name">
+                <q-td v-for="col in props.cols" :key="col.name" :align="col.align">
                     <template v-if="col.name === 'action'">
                         <slot name="action">
                             <q-btn round size="xs" color="primary" icon="remove" @click="removeRow(props.row)" />
@@ -65,7 +65,7 @@
             </q-tr>
         </template>
 
-        <!-- the following is for passing q-table slots from parent q-inline-edit-table tag -->
+        <!-- the following is for passing q-table slots from parent q-inline-edit-table tag, so can remain support back the q-table slots -->
         <template v-for="(_, name) in $slots" v-slot:[name]="slotProps">
             <slot v-if="slotProps" :name="name" v-bind="slotProps" />
             <slot v-else :name="name" />
