@@ -2,7 +2,7 @@
     <q-table bordered :columns="columns" :rows="rows">
         <template v-slot:body="props">
             <q-tr>
-                <q-td v-for="col in props.cols" :key="col.name" :align="col.align">
+                <q-td v-for="col in props.cols" :key="col.name" :align="col.align" :style="{ backgroundColor: col.color }">
                     <template v-if="col.name === 'action'">
                         <slot name="action">
                             <q-btn round size="xs" color="primary" icon="remove" @click="removeRow(props.row)" />
@@ -29,15 +29,23 @@
                             @update:model-value="(value) => isEditing.editedValues[col.name] = value / 100"></q-input>
                     </template>
 
-                    <!-- isEditing.status is false, just display the value, then: -->
+                    <!-- isEditing.status is false, just view the value, then: -->
+                    <!-- slot view-mode-value-cell is for parent overriding the html if showing default value is not enough-->
+                    <!-- parent can use v-slot <template v-slot:view-mode-value-cell="slotProps"></template> to override the view mode value cell -->
                     <template v-else-if="col.type === 'string'">
-                        {{ (col.value) }}
+                       <slot name="view-mode-value-cell" :value="(col.value)">
+                            {{ (col.value)}}
+                        </slot>
                     </template>
                     <template v-else-if="col.type === 'number' && col.value != null">
-                        {{ (col.value).toFixed(col.decimalPlaces) }}
+                        <slot name="view-mode-value-cell" :value="(col.value).toFixed(col.decimalPlaces)">
+                            {{ (col.value).toFixed(col.decimalPlaces) }}
+                        </slot>
                     </template>
                     <template v-else-if="col.type === 'percentage' && col.value != null">
-                        {{ (col.value * 100).toFixed(col.decimalPlaces) }}%
+                        <slot name="view-mode-value-cell" :value="(col.value * 100).toFixed(col.decimalPlaces)">
+                            {{ (col.value * 100).toFixed(col.decimalPlaces) }}%
+                        </slot>
                     </template>
                 </q-td>
             </q-tr>
