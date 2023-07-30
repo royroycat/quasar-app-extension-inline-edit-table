@@ -2,7 +2,7 @@
     <q-table bordered :columns="columns" :rows="rows">
         <template v-slot:body="props">
             <q-tr>
-                <q-td v-for="col in props.cols" :key="col.name" :align="col.align" :style="{ backgroundColor: $q.color.getBrand(col.color) }">
+                <q-td v-for="col in props.cols" :key="col.name" :align="col.align" :style="{ backgroundColor: col.color }">
                     <template v-if="col.name === 'action'">
                         <slot name="action">
                             <q-btn round size="xs" color="primary" icon="remove" @click="removeRow(props.row)" />
