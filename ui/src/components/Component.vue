@@ -32,6 +32,7 @@
                     <!-- isEditing.status is false, just view the value, then: -->
                     <!-- slot view-mode-value-cell is for parent overriding the html if showing default value is not enough-->
                     <!-- parent can use v-slot <template v-slot:view-mode-value-cell-{fieldName}="slotProps"></template> to override the view mode value cell -->
+                    <!-- view-mode-value-cell-{fieldName} props provided: fieldName, value, col (object), row (object) -->
                     <template v-else-if="col.type === 'string'">
                        <slot :name="'view-mode-value-cell-'+col.name" :fieldName="col.name" :value="col.value" :col="col" :row="props.row">
                             {{ (col.value)}}
