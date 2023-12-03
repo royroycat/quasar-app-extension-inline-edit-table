@@ -31,19 +31,19 @@
 
                     <!-- isEditing.status is false, just view the value, then: -->
                     <!-- slot view-mode-value-cell is for parent overriding the html if showing default value is not enough-->
-                    <!-- parent can use v-slot <template v-slot:view-mode-value-cell="slotProps"></template> to override the view mode value cell -->
+                    <!-- parent can use v-slot <template v-slot:view-mode-value-cell-{fieldName}="slotProps"></template> to override the view mode value cell -->
                     <template v-else-if="col.type === 'string'">
-                       <slot name="view-mode-value-cell" :fieldName="col.name" :value="col.value" :col="col" :row="props.row">
+                       <slot :name="'view-mode-value-cell-'+col.name" :fieldName="col.name" :value="col.value" :col="col" :row="props.row">
                             {{ (col.value)}}
                         </slot>
                     </template>
                     <template v-else-if="col.type === 'number' && col.value != null">
-                        <slot name="view-mode-value-cell" :fieldName="col.name" :value="(col.value).toFixed(col.decimalPlaces)" :col="col" :row="props.row">
+                        <slot :name="'view-mode-value-cell-'+col.name" :fieldName="col.name" :value="(col.value).toFixed(col.decimalPlaces)" :col="col" :row="props.row">
                             {{ (col.value).toFixed(col.decimalPlaces) }}
                         </slot>
                     </template>
                     <template v-else-if="col.type === 'percentage' && col.value != null">
-                        <slot name="view-mode-value-cell" :fieldName="col.name" :value="(col.value * 100).toFixed(col.decimalPlaces)" :col="col" :row="props.row">
+                        <slot :name="'view-mode-value-cell-'+col.name" :fieldName="col.name" :value="(col.value * 100).toFixed(col.decimalPlaces)" :col="col" :row="props.row">
                             {{ (col.value * 100).toFixed(col.decimalPlaces) }}%
                         </slot>
                     </template>
