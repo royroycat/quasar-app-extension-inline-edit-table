@@ -28,6 +28,13 @@
                         <q-input type="number" outlined :model-value="isEditing.editedValues[col.name] * 100"
                             @update:model-value="(value) => isEditing.editedValues[col.name] = value / 100"></q-input>
                     </template>
+                     <template
+                        v-else-if="col.type === 'select' && isEditing.status == true && col.editable == true && isEditing.row == props.row">
+                        <q-select outlined dense :options="resolveOptions(col.options)"
+                            v-model="isEditing.editedValues[col.name]"
+                            :option-label="(opt) => opt.label || opt.value"
+                            :option-value="(opt) => opt.value" />
+                    </template>
 
                     <!-- isEditing.status is false, just view the value, then: -->
                     <!-- slot view-mode-value-cell is for parent overriding the html if showing default value is not enough-->
@@ -46,6 +53,11 @@
                     <template v-else-if="col.type === 'percentage' && col.value != null">
                         <slot :name="'view-mode-value-cell-'+col.name" :fieldName="col.name" :value="(col.value * 100).toFixed(col.decimalPlaces)" :col="col" :row="props.row">
                             {{ (col.value * 100).toFixed(col.decimalPlaces) }}%
+                        </slot>
+                    </template>
+                    <template v-else-if="col.type === 'select' && col.value != null">
+                        <slot :name="'view-mode-value-cell-'+col.name" :fieldName="col.name" :value="getSelectLabel(col)" :col="col" :row="props.row">
+                            {{ getSelectLabel(col) }}
                         </slot>
                     </template>
                 </q-td>
@@ -69,6 +81,12 @@
                     <template v-else-if="col.requireWhenCreate == true && col.type === 'percentage'">
                         <q-input outlined dense type="number" :model-value="creatingValues[col.name]?creatingValues[col.name] * 100:creatingValues[col.name]=0"
                             @update:model-value="(value) => creatingValues[col.name] = value / 100"></q-input>
+                    </template>
+                    <template v-else-if="col.requireWhenCreate == true && col.type === 'select'">
+                        <q-select outlined dense :options="resolveOptions(col.options)"
+                            v-model="creatingValues[col.name]"
+                            :option-label="(opt) => opt.label || opt.value"
+                            :option-value="(opt) => opt.value" />
                     </template>
                 </q-td>
             </q-tr>
@@ -110,6 +128,17 @@ export default {
         this.columns.unshift({ name: 'action', label: 'action', align: 'left' })
     },
     methods: {
+        resolveOptions(options) {
+            if (typeof options === 'function') {
+                return options();
+            }
+            return options || [];
+        },
+        getSelectLabel(col) {
+            const options = this.resolveOptions(col.options);
+            const selectedOption = options.find(opt => opt.value === col.value);
+            return selectedOption ? (selectedOption.label || selectedOption.value) : col.value;
+        },
         resetEditingAndCreatingData() {
             this.isEditing.status = false
             this.isEditing.row = null
