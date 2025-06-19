@@ -189,6 +189,13 @@ export default {
             // reflect the table ui
             // replace the row value of that row (by index) by new value
             const index = this.rows.indexOf(thisRow);
+
+            this.columns.forEach(col => {
+                if (col.type === 'select' && thisRow[col.name]) {
+                    newValues[col.name] = newValues[col.name].value;
+                }
+            });
+
             this.rows[index] = { ...newValues }
             this.resetEditingAndCreatingData()
         },
