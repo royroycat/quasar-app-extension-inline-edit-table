@@ -164,14 +164,14 @@ export default {
             
             this.columns.forEach(col => {
                 if (col.type === 'select' && thisRow[col.name]) {
-                const options = this.resolveOptions(col.options);
-                const selectedOption = options.find(opt => opt.value === thisRow[col.name]);
-                if (selectedOption) {
-                    this.isEditing.editedValues[col.name] = selectedOption;
-                } else {
-                    // Fallback for unmatched values
-                    this.isEditing.editedValues[col.name] = { label: thisRow[col.name], value: thisRow[col.name] };
-                }
+                    const options = this.resolveOptions(col.options);
+                    const selectedOption = options.find(opt => opt.value === thisRow[col.name]);
+                    if (selectedOption) {
+                        this.isEditing.editedValues[col.name] = selectedOption;
+                    } else {
+                        // Fallback for unmatched values
+                        this.isEditing.editedValues[col.name] = { label: thisRow[col.name], value: thisRow[col.name] };
+                    }
                 }
             });
 
