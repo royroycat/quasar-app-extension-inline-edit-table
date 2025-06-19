@@ -28,13 +28,14 @@
                         <q-input type="number" outlined :model-value="isEditing.editedValues[col.name] * 100"
                             @update:model-value="(value) => isEditing.editedValues[col.name] = value / 100"></q-input>
                     </template>
-                     <template
+                    <template
                         v-else-if="col.type === 'select' && isEditing.status == true && col.editable == true && isEditing.row == props.row">
                         <q-select outlined dense :options="resolveOptions(col.options)"
                             v-model="isEditing.editedValues[col.name]"
                             :option-label="(opt) => opt.label || opt.value"
                             :option-value="(opt) => opt.value" />
                     </template>
+                    
 
                     <!-- isEditing.status is false, just view the value, then: -->
                     <!-- slot view-mode-value-cell is for parent overriding the html if showing default value is not enough-->
@@ -160,6 +161,19 @@ export default {
             this.isEditing.row = thisRow
             // copy row field value for v-model editedValue
             this.isEditing.editedValues = { ...thisRow }
+            
+            this.columns.forEach(col => {
+                if (col.type === 'select' && thisRow[col.name]) {
+                const options = this.resolveOptions(col.options);
+                const selectedOption = options.find(opt => opt.value === thisRow[col.name]);
+                if (selectedOption) {
+                    this.isEditing.editedValues[col.name] = selectedOption;
+                } else {
+                    // Fallback for unmatched values
+                    this.isEditing.editedValues[col.name] = { label: thisRow[col.name], value: thisRow[col.name] };
+                }
+                }
+            });
 
             this.$emit('editRow', thisRow);
         },
