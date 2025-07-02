@@ -202,6 +202,13 @@ export default {
         createRow() {
             console.log("createRow event emitted:")
             console.log("creating Value : ", this.creatingValues)
+
+            this.columns.forEach(col => {
+                if (col.type === 'select') {
+                    this.creatingValues[col.name] = this.creatingValues[col.name].value;
+                }
+            });
+
             this.$emit('createRow', this.creatingValues)
             // reflect the table ui
             this.rows.push(this.creatingValues)
