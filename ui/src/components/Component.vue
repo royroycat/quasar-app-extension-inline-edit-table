@@ -184,8 +184,7 @@ export default {
             let newValues = { ...this.isEditing.editedValues }
 
             console.log("proxy row : ", thisRow, "new Values : ", newValues)
-            this.$emit('confirmRow', thisRow, newValues);
-
+            
             // reflect the table ui
             // replace the row value of that row (by index) by new value
             const index = this.rows.indexOf(thisRow);
@@ -195,7 +194,8 @@ export default {
                     newValues[col.name] = newValues[col.name].value;
                 }
             });
-
+            
+            this.$emit('confirmRow', thisRow, newValues);
             this.rows[index] = { ...newValues }
             this.resetEditingAndCreatingData()
         },
